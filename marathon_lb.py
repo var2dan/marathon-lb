@@ -1582,29 +1582,27 @@ def make_config_valid_and_regenerate(marathon, groups, bind_http_https,
         apps = []
         excluded_ids = []
 
-        for app in marathon_apps:
-            valid_marathon_apps.append(app)
-            apps = get_apps(marathon, valid_marathon_apps)
+        apps = get_apps(marathon, marathon_apps)
 
-            domain_map_array = []
-            app_map_array = []
+        domain_map_array = []
+        app_map_array = []
 
-            generated_config = config(apps, groups, bind_http_https, ssl_certs,
-                                      templater, haproxy_map, domain_map_array,
-                                      app_map_array, config_file)
+        generated_config = config(apps, groups, bind_http_https, ssl_certs,
+                          templater, haproxy_map, domain_map_array,
+                          app_map_array, config_file)
 
-            if not generateAndValidateConfig(generated_config, config_file,
-                                             domain_map_array, app_map_array,
-                                             haproxy_map):
-                invalid_id = valid_marathon_apps[-1]["id"]
-                logger.warn(
-                    "invalid configuration caused by app %s; "
-                    "it will be excluded", invalid_id)
-                excluded_ids.append(invalid_id)
-                del valid_marathon_apps[-1]
+        if not generateAndValidateConfig(generated_config, config_file,
+                                 domain_map_array, app_map_array,
+                                 haproxy_map):
+            invalid_id = valid_marathon_apps[-1]["id"]
+            logger.warn(
+                "invalid configuration caused by app %s; "
+                "it will be excluded", invalid_id)
+            excluded_ids.append(invalid_id)
+            del valid_marathon_apps[-1]
 
-                if len(valid_marathon_apps) == 0:
-                    apps = []
+            if len(valid_marathon_apps) == 0:
+                apps = []
 
         if len(valid_marathon_apps) > 0:
             logger.debug("regentrating valid config which excludes the"
