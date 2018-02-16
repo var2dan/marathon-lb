@@ -1594,26 +1594,13 @@ def make_config_valid_and_regenerate(marathon, groups, bind_http_https,
         if not generateAndValidateConfig(generated_config, config_file,
                                  domain_map_array, app_map_array,
                                  haproxy_map):
-            invalid_id = valid_marathon_apps[-1]["id"]
             logger.warn(
-                "invalid configuration caused by app %s; "
-                "it will be excluded", invalid_id)
-            excluded_ids.append(invalid_id)
-            del valid_marathon_apps[-1]
-
-            if len(valid_marathon_apps) == 0:
-                apps = []
-
-        if len(valid_marathon_apps) > 0:
-            logger.debug("regentrating valid config which excludes the"
-                         "following apps: %s", excluded_ids)
-            compareWriteAndReloadConfig(generated_config,
+                "invalid configuration skipping validation")
+        logger.debug("regentrating valid config")
+        compareWriteAndReloadConfig(generated_config,
                                         config_file,
                                         domain_map_array,
                                         app_map_array, haproxy_map)
-        else:
-            logger.error("A valid config file could not be generated after"
-                         "excluding all apps! skipping reload")
 
         logger.debug("regenerating while excluding invalid tasks finished, "
                      "took %s seconds",
